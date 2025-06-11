@@ -33,3 +33,16 @@ JOIN products p ON s.product_id = p.product_id -- соединение табл�
 GROUP BY e.first_name, e.last_name -- группировка по столбцам
 HAVING AVG(p.price * s.quantity) < (SELECT average_all_sales FROM average_sales) -- условие - средняя выручка меньше, чем общая средняя выручка по всем продавцам
 ORDER BY average_income ASC; -- Сортирует продавцов по средней выручке в порядке возрастания.
+
+--------------------------------------------
+day_of_the_week_income
+
+SELECT 
+    CONCAT(e.first_name, ' ', e.last_name) AS seller, -- вывод Имени и Фамилии продавца в один столбец
+    TO_CHAR(s.sale_date, 'Day') AS day_of_week, --выделение из даты продажи названиее дня недели
+    FLOOR(SUM(p.price * s.quantity)) AS income -- подсчет и округление вниз выручки продавца за день
+FROM sales s
+JOIN employees e ON s.sales_person_id = e.employee_id -- соединение таблиц
+JOIN products p ON s.product_id = p.product_id -- соединение таблиц
+GROUP BY e.first_name, e.last_name, TO_CHAR(s.sale_date, 'Day'), EXTRACT(DOW FROM s.sale_date) -- группировка по ФИО, дню недели
+ORDER BY EXTRACT(DOW FROM s.sale_date), seller; -- сортировка по дню и продавцу
