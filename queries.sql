@@ -16,14 +16,15 @@ GROUP BY e.first_name, e.last_name -- группировка по столбца
 ORDER BY income desc -- сортировка по убываюнию по столбцу income
 LIMIT 10; -- выводит первые 10 строк
 
+--------------------------------------
+lowest_average_income
+
 WITH average_sales AS (
     SELECT AVG(p.price * s.quantity) AS average_all_sales -- средняя общая выручка
     FROM sales s
     JOIN products p ON s.product_id = p.product_id -- объединение таблиц sales и products по product_id
 ) -- создается временная таблица для расчетов
 
-------------------------------------------
-lowest_average_income
 
 SELECT CONCAT(e.first_name, ' ', e.last_name) AS seller,  -- вывод Имени и Фамилии продавца в один столбец
        FLOOR(AVG(p.price * s.quantity)) AS average_income -- средняя выручка продавца и округляет её.
