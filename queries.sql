@@ -79,4 +79,28 @@ ORDER BY selling_month; -- сортировка по дате по возрас�
 
 special_offer
 
+WITH promo_sales AS (
+    SELECT s.customer_id, s.sale_date -- вывод покупателя и даты покупки
+    FROM sales AS s
+    JOIN products AS p ON s.product_id = p.product_id -- соединение таблиц
+    WHERE p.price = 0 -- условие что покупка была 0 (акционная)
+), -- Создание временной таблицы, где товары были по цене 0
+first_promo_sales AS (
+    SELECT ps.customer_id, MIN(ps.sale_date) AS first_sale_date
+    FROM promo_sales AS ps
+    GROUP BY ps.customer_id
+) -- временная таблица, в которой вычисляем дату первой акционной покупки для каждого покупателя
+SELECT 
+    CONCAT(c.first_name, ' ', c.last_name) AS customer, -- вывод Имени и Фамилии продавца в один столбец покупателя
+    fps.first_sale_date AS sale_date, -- дата покупки из временно таблицы
+    CONCAT(e.first_name, ' ', e.last_name) AS seller -- вывод Имени и Фамилии продавца в один столбец продавца
+FROM first_promo_sales AS fps
+JOIN sales AS s -- соединение таблиц
+ON fps.customer_id = s.customer_id AND fps.first_sale_date = s.sale_date
+JOIN customers AS c 
+ON s.customer_id = c.customer_id
+JOIN employees AS e 
+ON s.sales_person_id = e.employee_id
+ORDER BY c.customer_id; -- сортировка по покупателю
+
 
