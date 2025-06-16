@@ -47,3 +47,36 @@ JOIN employees e ON s.sales_person_id = e.employee_id -- соединение т
 JOIN products p ON s.product_id = p.product_id -- соединение таблиц
 GROUP BY e.first_name, e.last_name, TO_CHAR(s.sale_date, 'Day'), EXTRACT(DOW FROM s.sale_date) -- группировка по ФИО, дню недели
 ORDER BY EXTRACT(DOW FROM s.sale_date), seller; -- сортировка по дню и продавцу
+
+-------------------------------------------------------------------------
+age_groups
+
+SELECT 
+    CASE -- начало конструкции CASE
+        WHEN age BETWEEN 16 AND 25 THEN '16-25'  -- если значение в столбце возраст между 16 и 25, то попадает в эту колонку
+        WHEN age BETWEEN 26 AND 40 THEN '26-40'  -- если значение в столбце возраст между 26 и 40, то попадает в эту колонку
+        ELSE '40+' -- Иначе (если не выполняется ни одно из условий) попадает в колонку 40+
+    END AS age_category, -- конец конструкции CASE
+    COUNT(customer_id) AS age_count 
+FROM customers -- из таблицы customers
+GROUP BY age_category -- группировка по колонке возрастная категория
+ORDER BY age_category; -- группировка по колонке возрастная категория
+
+----------------------------------------------------------------------
+customers_by_month
+
+
+SELECT 
+    TO_CHAR(s.sale_date, 'YYYY-MM') AS selling_month, --выделение из даты продажи формат даты 'YYYY-MM'
+    COUNT(DISTINCT s.customer_id) AS total_customers, --подсчет уникальных покупателей
+    FLOOR(SUM(p.price * s.quantity)) AS income -- выручка округленная в меньшую сторону
+FROM sales AS s
+JOIN products AS p ON s.product_id = p.product_id -- соединение таблиц
+GROUP BY selling_month -- группировка по дате
+ORDER BY selling_month; -- сортировка по дате по возрастанию
+
+-----------------------------------------------
+
+special_offer
+
+
